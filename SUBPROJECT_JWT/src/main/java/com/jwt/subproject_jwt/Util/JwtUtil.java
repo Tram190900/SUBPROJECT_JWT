@@ -38,6 +38,7 @@ public class JwtUtil {
             signedJWT.sign(signer);
 
             token = signedJWT.serialize();
+            validateToken(token);
         } catch (Exception e) {
             logger.error(e.getMessage());
         }
@@ -46,6 +47,23 @@ public class JwtUtil {
 
     public Date generateExpirationDate() {
         return new Date(System.currentTimeMillis() + 864000000);
+    }
+    
+     //--------------------checkToken---------------------------------------
+    public boolean validateToken(String authToken) throws SignatureException {
+        try {
+            Jwts.parser().setSigningKey(SECRET).parseClaimsJws(authToken);
+            return true;
+        } catch (MalformedJwtException ex) {
+            logger.error("Invalid JWT token");
+        } catch (ExpiredJwtException ex) {
+            logger.error("Expired JWT token");
+        } catch (UnsupportedJwtException ex) {
+            logger.error("Unsupported JWT token");
+        } catch (IllegalArgumentException ex) {
+            logger.error("JWT claims string is empty.");
+        }
+        return false;
     }
 
 
