@@ -1,0 +1,50 @@
+package com.jwt.subproject_jwt.service;
+
+import com.jwt.subproject_jwt.enitity.User;
+import com.jwt.subproject_jwt.repository.UserRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import com.jwt.subproject_jwt.authen.UserPrincipal;
+
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+@Service
+public class UserServiceImpl implements UserService {
+
+    @Autowired
+    private UserRepository userRepository;
+
+    @Override
+    public User createUser(User user) {
+        return userRepository.saveAndFlush(user);
+    }
+
+    @Override
+    public UserPrincipal findByUsername(String username) {
+        User user = userRepository.findByUsername(username);
+        UserPrincipal userPrincipal = new UserPrincipal();
+
+        if (null != user) {
+
+            Set<String> authorities = new HashSet<>();
+            userPrincipal.setUserId(user.getId());
+            userPrincipal.setUsername(user.getUsername());
+            userPrincipal.setPassword(user.getPassword());
+            userPrincipal.setAuthorities(authorities);
+
+        }
+
+        return userPrincipal;
+
+    }
+
+    @Override
+    public List<User> findAll() {
+        return userRepository.findAll();
+    }
+
+
+}
